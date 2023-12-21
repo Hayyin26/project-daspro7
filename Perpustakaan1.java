@@ -1,7 +1,7 @@
 import java.util.*;
 import java.text.*;
 
-public class Perpustakaan {
+public class Perpustakaan1 {
     static Scanner scan = new Scanner(System.in);
     static Scanner sc = new Scanner(System.in);
     static boolean bukuTersedia = false; // sebagai penanda judul buku ditemukan atau tidak
@@ -141,12 +141,12 @@ public class Perpustakaan {
 
                     // Case ke-2 "Tambahan Data Buku"
                     case 2:
-                        totalBuku = tambahDataBuku(dataBuku, totalBuku);
+                        totalBuku = tambahDataBuku(dataBuku, totalBuku, isPetugas);
                         break;
 
                     // Case ke-3 "Update Data Buku"
                     case 3:
-                        updateDataBuku(dataBuku, judulBuku);
+                        updateDataBuku(dataBuku, judulBuku, isPetugas);
                         break;
 
                     // Case ke-4 "Pinjam Buku"
@@ -173,7 +173,7 @@ public class Perpustakaan {
 
                     // Case ke-8 "Hapus Data Buku"
                     case 8:
-                        totalBuku = hapusDataBuku(dataBuku, totalBuku);
+                        totalBuku = hapusDataBuku(dataBuku, isPetugas, totalBuku);
                         break;
 
                     // Case ke-9 "Keluar"
@@ -227,7 +227,6 @@ public class Perpustakaan {
             System.out.print("Masukkan Password: ");
             String passwordMhs = sc.next();
 
-            // Simpan data mahasiswa ke dalam array
             for (int i = 0; i < nama.length; i++) {
                 if (nama[i] == null) {
                     nama[i] = namaMahasiswa;
@@ -296,7 +295,7 @@ public class Perpustakaan {
     }
 
     // Fungsi untuk menambah data buku
-    public static int tambahDataBuku(String[][] dataBuku, int totalBuku) {
+    public static int tambahDataBuku(String[][] dataBuku, int totalBuku, boolean isPetugas) {
         if (totalBuku < MAX_BUKU) { // Cek apakah batas maksimal buku belum tercapai
             System.out.println("\n===============================< TAMBAH BUKU >===============================\n");
             // Meminta pengguna untuk memasukkan detail buku baru
@@ -354,9 +353,9 @@ public class Perpustakaan {
                 boolean statusPinjam = Boolean.parseBoolean(book[8]);
                 int stokBuku = Integer.parseInt(book[5]);
                 if (stokBuku > 0 || Integer.parseInt(book[5]) > 0 && !statusPinjam) {
-                    book[8] = "true"; // status
+                    book[8] = "true";
                     book[6] = String.valueOf(Integer.parseInt(book[6]) + 1);
-                    book[5] = String.valueOf(stokBuku - 1); // stok
+                    book[5] = String.valueOf(stokBuku - 1);
                     // Menandai buku sebagai tersedia setelah dipinjam
                     if (Integer.parseInt(book[5]) > 0) {
                         bukuTersedia = true;
@@ -427,8 +426,8 @@ public class Perpustakaan {
                 nimMhs = scan.next();
                 boolean statusPinjam = Boolean.parseBoolean(book[8]);
                 if (statusPinjam) {
-                    book[8] = "false"; // Status Pinjam Buku
-                    book[5] = String.valueOf(Integer.parseInt(book[5]) + 1);// Stok
+                    book[8] = "false";
+                    book[5] = String.valueOf(Integer.parseInt(book[5]) + 1);
 
                     // Inisialisasi tanggalPengembalian
                     long selisihDetik = new Date().getTime() - tanggalPengembalian.getTime();
@@ -471,11 +470,11 @@ public class Perpustakaan {
         for (int j = 0; j < riwayatAntrian.length; j++) {
             if (judulKembali.equalsIgnoreCase(riwayatAntrian[j])) {
                 bukuDitemukan = true;
-                // Geser elemen setelahnya ke posisi sebelumnya
+                // Geser elemen
                 for (int k = j; k < riwayatAntrian.length - 1; k++) {
                     riwayatAntrian[k] = riwayatAntrian[k + 1];
                 }
-                // Kosongkan elemen terakhir
+                // Kosongkan elemen
                 riwayatAntrian[riwayatAntrian.length - 1] = null;
                 break;
             }
@@ -535,7 +534,7 @@ public class Perpustakaan {
     }
 
     // Fungsi Update Data Buku
-    public static void updateDataBuku(String[][] dataBuku, String judulBuku) {
+    public static void updateDataBuku(String[][] dataBuku, String judulBuku, boolean isPetugas) {
         System.out.println("\n===========================< UPDATE DATA BUKU >===============================\n");
         System.out.print("Masukkan judul buku yang ingin diupdate: ");
         scan.nextLine(); // Buang newline
@@ -626,12 +625,13 @@ public class Perpustakaan {
             // Meminta input judul buku lagi untuk melakukan update
             System.out.println("Silakan masukkan judul buku yang ingin diupdate: ");
             judulBuku = scan.nextLine();
-            updateDataBuku(dataBuku, judulBuku); // Panggil kembali fungsi updateDataBuku dengan judul yang baru
+            updateDataBuku(dataBuku, judulBuku, isPetugas); // Panggil kembali fungsi updateDataBuku dengan judul yang
+                                                            // baru
         }
     }
 
     // Fungsi untuk Menghapus Data Buku
-    public static int hapusDataBuku(String[][] dataBuku, int totalBuku) {
+    public static int hapusDataBuku(String[][] dataBuku, boolean isPetugas, int totalBuku) {
         System.out.println("\n================================< HAPUS BUKU >===============================\n");
         System.out.print("Masukkan judul buku yang ingin dihapus: ");
         String judulHapus = scan.next();
@@ -640,19 +640,18 @@ public class Perpustakaan {
         for (int i = 0; i < totalBuku; i++) {
             String[] book = dataBuku[i];
             if (judulHapus.equalsIgnoreCase(book[0])) {
-                // Menghapus data buku dengan menggeser elemen setelahnya ke posisi sebelumnya
+                // geser elemen
                 for (int j = i; j < totalBuku - 1; j++) {
                     dataBuku[j] = dataBuku[j + 1];
                 }
-                // Mengosongkan elemen terakhir
+                // Mengosongkan elemen
                 dataBuku[totalBuku - 1] = new String[dataBuku[0].length];
                 bukuDihapus = true;
                 System.out.println("Buku dengan judul '" + judulHapus + "' berhasil dihapus.\n");
-                totalBuku--; // Kurangkan jumlah buku yang ada
+                totalBuku--;
                 break;
             }
         }
-
         if (!bukuDihapus) {
             System.out.println("Buku dengan judul '" + judulHapus + "' tidak ditemukan.\n");
         }
